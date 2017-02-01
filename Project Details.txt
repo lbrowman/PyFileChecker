@@ -1,0 +1,26 @@
+Details
+
+This is good for someone looking for a quick 5 star review.
+
+I need a windows command line script that will:
+
+I can set a directory to check
+It checks this directory for the last modified file
+If the last file modified was not modified within the last 20 minutes
+Then, the script emails me
+
+I need a way to run this script every 20 minutes.
+
+I'm currently running Windows 7 if that makes a difference.
+
+If this is something that you can do, then please respond with ready as the 1st word of your response.
+
+One-time Project: Develop Shell Script
+Project Type: One-time project
+
+Proposed Solution
+Ready
+
+I can get this up and running relatively quicky using python2.7, Monday January 16th being my earliest estimate and Wednesday January 18th my latest.
+From my previous experience with windows servers and python i know we can set it to run using windows task manager once python and the required libraries have been installed. 
+I intend to have a config file where you can set as many directories needed to check as necessary.
