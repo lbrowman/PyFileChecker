@@ -1,4 +1,8 @@
-import os, time, ast
+"""
+File alert  script for Louis Dillon by Lloyd Browman
+2017-02-02
+"""
+import os, time, ast, sys
 from email.MIMEMultipart import MIMEMultipart
 import ConfigParser, yagmail
 
@@ -8,29 +12,39 @@ CONFIG.read("app.cfg")
 MAIL = yagmail.SMTP({'pyfilechecker@gmail.com': 'PythonFileChecker - Lloyd Browman'},
                     'YmTthNbM*<F4-,,e') #mail client used
 
-def sendmail(alertfile, passedtime):
+def sendmail(minutes):
     """Sends mail"""
-    recipient = ast.literal_eval(CONFIG.get('email', 'email'))
+    recipient = ast.literal_eval(CONFIG.get('email', 'recipient')) #gets mail recipients
     msg = MIMEMultipart('alternative')
-    msg['subject'] = 'A file has not been updated'
-    msg['body'] = "{} has not been modified in {} mins.".format(alertfile, passedtime)
+    msg['subject'] = str(ast.literal_eval(CONFIG.get('email', 'subject'))).format(
+        ast.literal_eval(CONFIG.get('email', 'computer'))) # gets subject paramters
+    #fills body of message
+    msg['body'] = "Your target directory has not been updaed in {} mins.".format(minutes)
     MAIL.send(recipient, msg['subject'], msg['body'])
 
-def gettimepassed(directory, filename):
+def gettimepassed(targeted_directory, filename):
     """Gets the time passed since file was modified"""
-    return (time.time()-os.path.getmtime(os.path.join(directory, filename)))/60
+    return (time.time()-os.path.getmtime(os.path.join(targeted_directory, filename)))/60
 
 while 1:
-    TIME_INTERVAL = CONFIG.get('timeinterval', 'time')
-    DIRECTORIES = ast.literal_eval(CONFIG.get('dir', 'dir'))
+    DIRECTORIES = ast.literal_eval(CONFIG.get('dir', 'dir')) #gets directory from config file
+    #gets time interval to check for
+    MINUTES = ast.literal_eval(CONFIG.get('timeinterval', 'minutes'))
+    for directory in DIRECTORIES: #check if directory exists
+        if os.path.exists(directory):
+            files = os.listdir(directory)
+            newest_file = max(files, key=os.path.getctime)
+            timelastmodified = gettimepassed(directory, newest_file)
+            if gettimepassed(directory, newest_file) > MINUTES:
+                sendmail(MINUTES)
+                time.sleep((MINUTES*60))
+            else:
+                time.sleep(60)
+        else:
+            print "Directory Does not Exist"
+            time.sleep(15)
+            sys.exit()
 
-    for directory in DIRECTORIES:
-        files = os.listdir(directory)
-        newest_file = max(files, key=os.path.getctime)
-        timelastmodified = gettimepassed(directory, newest_file)
-        print  newest_file, timelastmodified
-        if gettimepassed(directory, newest_file) < 20:
-            sendmail(newest_file, timelastmodified)
 
 
 
