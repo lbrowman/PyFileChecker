@@ -30,11 +30,10 @@ while 1:
     DIRECTORIES = ast.literal_eval(CONFIG.get('dir', 'dir')) #gets directory from config file
     #gets time interval to check for
     MINUTES = ast.literal_eval(CONFIG.get('timeinterval', 'minutes'))
-    for directory in DIRECTORIES: #check if directory exists
-        if os.path.exists(directory):
+    for directory in DIRECTORIES:
+        if os.path.exists(directory): #check if directory exists
             files = os.listdir(directory)
-            newest_file = max(files, key=os.path.getctime)
-            timelastmodified = gettimepassed(directory, newest_file)
+            newest_file = max(files, key=os.path.getctime) #gets last modified file
             if gettimepassed(directory, newest_file) > MINUTES:
                 sendmail(MINUTES)
                 time.sleep((MINUTES*60))
